@@ -5,7 +5,7 @@ module Mutations
   class <%= ruby_class_name %>Delete < BaseMutation
     description "Deletes a <%= file_name %> by ID"
 
-    field :<%= file_name %>, Types::<%= options[:namespaced_types] ? 'Objects::' : '' %><%= ruby_class_name %>Type, null: false
+    field :<%= file_name %>, Types::<%= options[:namespaced_types] ? 'Objects::' : '' %><%= ruby_class_name %>, null: false
 
     argument :id, ID, required: true
 
