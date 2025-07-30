@@ -2,7 +2,7 @@
 
 <% module_namespacing_when_supported do -%>
 module Mutations
-  class <%= ruby_class_name %>Create < BaseMutation
+  class <%= ruby_class_name.gsub(/Type$/, '') %>Create < BaseMutation
     description "Creates a new <%= file_name %>"
 
     field :<%= file_name %>, Types::<%= options[:namespaced_types] ? 'Objects::' : '' %><%= ruby_class_name %>, null: false

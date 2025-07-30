@@ -2,7 +2,7 @@
 
 <% module_namespacing_when_supported do -%>
 module Mutations
-  class <%= ruby_class_name %>Delete < BaseMutation
+  class <%= ruby_class_name.gsub(/Type$/, '') %>Delete < BaseMutation
     description "Deletes a <%= file_name %> by ID"
 
     field :<%= file_name %>, Types::<%= options[:namespaced_types] ? 'Objects::' : '' %><%= ruby_class_name %>, null: false
