@@ -35,6 +35,60 @@ module Graphql
           inject_into_file "#{options[:directory]}/types/mutation_type.rb", "    field :#{file_name}_#{operation_type}, mutation: Mutations::#{class_name}#{operation_type.classify}\n", after: sentinel, verbose: false, force: false
         end
       end
+
+      # Take a type expression in any combination of GraphQL or Ruby styles
+      # and return it in a specified output style
+      # TODO: nullability / list with `mode: :graphql` doesn't work
+      # @param type_expresson [String]
+      # @param mode [Symbol]
+      # @param null [Boolean]
+      # @return [(String, Boolean)] The type expression, followed by `null:` value
+      def self.normalize_type_expression(type_expression, mode:, null: true)
+        if type_expression.start_with?("!")
+          normalize_type_expression(type_expression[1..-1], mode: mode, null: false)
+        elsif type_expression.end_with?("!")
+          normalize_type_expression(type_expression[0..-2], mode: mode, null: false)
+        elsif type_expression.start_with?("[") && type_expression.end_with?("]")
+          name, is_null = normalize_type_expression(type_expression[1..-2], mode: mode, null: null)
+          ["[#{name}]", is_null]
+        elsif type_expression.start_with?("Types::")
+          normalize_type_expression(type_expression[7..-1], mode: mode, null: null)
+        elsif type_expression.start_with?("types.")
+          normalize_type_expression(type_expression[6..-1], mode: mode, null: null)
+        else
+          case mode
+          when :ruby
+            case type_expression
+            when "Int"
+              ["Integer", null]
+            when "Integer", "Float", "Boolean", "String", "ID"
+              [type_expression, null]
+            else
+              ["Types::#{type_expression.camelize}Type", null]
+            end
+          when :graphql
+            [type_expression.camelize, null]
+          else
+            raise "Unexpected normalize mode: #{mode}"
+          end
+        end
+      end
+
+      private
+
+      def type_ruby_name
+        @type_ruby_name ||= self.class.normalize_type_expression(name, mode: :ruby)[0]
+      end
+
+      def ruby_class_name
+        class_prefix = 
+          if options[:namespaced_types]
+            "#{graphql_type.pluralize.camelize}::"
+          else
+            ""
+          end
+        @ruby_class_name || class_prefix + type_ruby_name.sub(/^Types::/, "")
+      end
     end
   end
 end
