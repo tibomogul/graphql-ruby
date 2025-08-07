@@ -17,6 +17,7 @@ module Graphql
       "If the given type name matches an existing ActiveRecord model, the generated type will automatically include fields for the models database columns."
       source_root File.expand_path('../templates', __FILE__)
       include FieldExtractor
+      include RelationshipExtractor
 
       class_option :node,
                    type: :boolean,

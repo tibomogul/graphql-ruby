@@ -95,6 +95,13 @@ module Graphql
         }
       end
 
+      def normalized_relationships
+        @normalized_relationships ||= relationships.map { |f|
+          name, raw_type = f.split(":", 2)
+          NormalizedRelationship.new(name, raw_type)
+        }
+      end
+
       def ruby_class_name
         class_prefix = 
           if options[:namespaced_types]
@@ -126,6 +133,17 @@ module Graphql
 
         def to_input_argument
           "argument :#{@name}, #{@type_expr}, required: false"
+        end
+      end
+
+      class NormalizedRelationship
+        def initialize(name, type_expr)
+          @name = name
+          @type_expr = type_expr
+        end
+
+        def to_object_field
+          "field :#{@name}, [Types::#{@type_expr}Type], null: true"
         end
       end
     end
