@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'generators/graphql/type_generator'
 require 'generators/graphql/field_extractor'
+require 'generators/graphql/relationship_extractor'
 
 module Graphql
   module Generators
