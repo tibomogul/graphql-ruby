@@ -11,7 +11,7 @@ module Graphql
       end
 
       def generate_column_string(column)
-        name = column.name
+        name = column.name.delete(' ')
         required = column.null ? "" : "!"
         type = column_type_string(column)
         "#{name}:#{required}#{type}"
