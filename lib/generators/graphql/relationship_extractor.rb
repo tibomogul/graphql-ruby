@@ -8,7 +8,7 @@ module Graphql
         klass&.reflect_on_all_associations(:has_many)&.map { |rel| generate_relationship_string(rel) }  || []
       end
 
-      def generate_relationsip_string(relationship)
+      def generate_relationship_string(relationship)
         name = relationship.name.to_s
         type = relationship.options[:class_name]
         "#{name}:#{type}"
